@@ -13,4 +13,5 @@ setup(
     package_dir={'': 'src'},
     include_package_data=True,
     install_requires=['attrs'],
+    tests_require=['requests'],
 )
