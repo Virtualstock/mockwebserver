@@ -1,4 +1,13 @@
 from threading import Thread
+import attr
+
+
+@attr.s
+class Request(object):
+    method = attr.ib()
+    query = attr.ib()
+    headers = attr.ib()
+    body = attr.ib(default=None)
 
 
 class MockWebServer(object):
@@ -15,9 +24,19 @@ class MockWebServer(object):
                 if not self.parse_request():
                     # Either returns true or sends error response
                     return
-                page = server._pages.get(self.path)
+                path, query = self.path, None
+                if '?' in path:
+                    path, query = path.split('?', 1)
+                page = server._pages.get(path)
                 if not page:
                     return self.send_error(404)
+                body = self.rfile.read(int(self.headers.getheader('Content-Length', 0)))
+                page._record_request(Request(
+                        method=self.command,
+                        query=query,
+                        headers=self.headers,
+                        body=body,
+                        ))
                 self.send_response(page.status, page.status_message)
                 content = page.content
                 if content:
@@ -44,23 +63,26 @@ class MockWebServer(object):
         self._thread.join()
 
     def page(self, url):
+        import urllib
         if url not in self._pages:
-            self._pages[url] = Page()
+            full_url = urllib.basejoin(self.url, url)
+            self._pages[url] = Page(full_url)
         return self._pages[url]
 
     def set(self, url, content, content_type='text/plain'):
-        import urllib
         page = self.page(url)
         page.set_content(content, content_type)
-        return urllib.basejoin(self.url, url)
+        return page
 
 
 class Page(object):
-    def __init__(self):
+    def __init__(self, url):
+        self.url = url
         self._content = ''
         self._status = 200
         self._status_message = 'OK'
         self._content_type = ''
+        self._requests = []
 
     def set_content(self, content, content_type):
         self._content = content
@@ -81,6 +103,13 @@ class Page(object):
     @property
     def content(self):
         return self._content
+
+    def _record_request(self, request):
+        self._requests.append(request)
+
+    def request(self, index):
+        assert len(self._requests) >= index
+        return self._requests[index-1]
 
 
 class WebServerThread(Thread):
