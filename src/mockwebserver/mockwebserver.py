@@ -1,5 +1,7 @@
-from threading import Thread
+import random
+
 import attr
+from wsgi_intercept.interceptor import RequestsInterceptor
 
 
 @attr.s
@@ -12,55 +14,49 @@ class Request(object):
 
 class MockWebServer(object):
     def __init__(self, host='', port=None):
-        import random
-        import BaseHTTPServer
         self._host = host or 'localhost'
         self._port = port or random.randint(20000, 50000)
+        self._interceptor = RequestsInterceptor(self.get_wsgi_app, host=self._host, port=self._port)
         self._url = 'http://{0}:{1}/'.format(self._host, self._port)
 
-        class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
-            def handle_one_request(self, server=self):
-                self.raw_requestline = self.rfile.readline(65537)
-                if not self.parse_request():
-                    # Either returns true or sends error response
-                    return
-                path, query = self.path, None
-                if '?' in path:
-                    path, query = path.split('?', 1)
-                page = server._pages.get(path)
-                if not page:
-                    return self.send_error(404)
-                body = self.rfile.read(int(self.headers.getheader('Content-Length', 0)))
-                page._record_request(Request(
-                        method=self.command,
-                        query=query,
-                        headers=self.headers,
-                        body=body,
-                        ))
-                self.send_response(page.status, page.status_message)
-                content = page.content
-                if content:
-                    self.send_header('content-type', page.content_type)
-                    self.end_headers()
-                    self.wfile.write(content)
-                else:
-                    self.end_headers()
-
-        self._server = BaseHTTPServer.HTTPServer((self._host, self._port), RequestHandler)
         self._pages = {}
-        self._thread = WebServerThread(self._server)
+
+    def get_wsgi_app(self):
+        return self.wsgi
+
+    def wsgi(self, environ, start_response):
+        method = environ['REQUEST_METHOD']
+        path, query = environ['PATH_INFO'], None
+        if '?' in path:
+            path, query = path.split('?', 1)
+        page = self._pages.get(path)
+        if not page:
+            start_response("404 Not Found", [])
+            return []
+        body = environ['wsgi.input'].read()
+        page._record_request(Request(
+                method=method,
+                query=query,
+                headers=environ.items(),
+                body=body,
+                ))
+        headers = []
+        content = [page.content]
+        if content:
+            headers += [('content-type', page.content_type)]
+        start_response("{} {}".format(page.status, page.status_message), headers)
+        return content
 
     @property
     def url(self):
         return self._url
 
     def __enter__(self):
-        self._thread.start()
+        self._interceptor.__enter__()
         return self
 
     def __exit__(self, *exc):
-        self._server.shutdown()
-        self._thread.join()
+        self._interceptor.__exit__(*exc)
 
     def page(self, url):
         import urllib
@@ -110,13 +106,3 @@ class Page(object):
     def request(self, index):
         assert len(self._requests) >= index
         return self._requests[index-1]
-
-
-class WebServerThread(Thread):
-    def __init__(self, server):
-        self.server = server
-        super(WebServerThread, self).__init__()
-        self.setDaemon(True)
-
-    def run(self):
-        self.server.serve_forever(poll_interval=0.05)
