@@ -15,6 +15,7 @@ setup(
     install_requires=[
         'attrs',
         'wsgi-intercept==1.5.1',
+        'requests',
     ],
     tests_require=['requests'],
 )
