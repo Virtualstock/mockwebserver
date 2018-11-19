@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import random
 
 import attr
@@ -31,7 +33,7 @@ class MockWebServer(object):
             path, query = path.split('?', 1)
         page = self._pages.get(path)
         if not page:
-            start_response("404 Not Found", [])
+            start_response('404 Not Found', [])
             return []
         body = environ['wsgi.input'].read()
         page._record_request(Request(
@@ -39,12 +41,12 @@ class MockWebServer(object):
                 query=query,
                 headers=environ.items(),
                 body=body,
-                ))
+        ))
         headers = []
         content = [page.content]
         if content:
             headers += [('content-type', page.content_type)]
-        start_response("{} {}".format(page.status, page.status_message), headers)
+        start_response('{} {}'.format(page.status, page.status_message), headers)
         return content
 
     @property
@@ -81,7 +83,9 @@ class Page(object):
         self._requests = []
 
     def set_content(self, content, content_type):
-        self._content = content
+        if type(content) is unicode:
+            content = content.encode('utf8')
+        self._content = str(content)
         self._content_type = content_type
 
     @property
