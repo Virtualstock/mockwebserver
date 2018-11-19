@@ -21,3 +21,13 @@ def test_requests_get():
         assert response.ok
         assert response.text = "page content"
 ```
+
+
+## How to distribute
+
+If you need to publish a new version of this package you can use this command:
+
+```bash
+$ make build
+$ make dist
+```
