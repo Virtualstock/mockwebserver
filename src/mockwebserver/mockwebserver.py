@@ -36,11 +36,11 @@ class MockWebServer(object):
             start_response('404 Not Found', [])
             return []
         body = environ['wsgi.input'].read()
-        page._record_request(Request(
-                method=method,
-                query=query,
-                headers=environ.items(),
-                body=body,
+        page.record_request(Request(
+            method=method,
+            query=query,
+            headers=environ.items(),
+            body=body,
         ))
         headers = []
         content = [page.content]
@@ -83,7 +83,7 @@ class Page(object):
         self._requests = []
 
     def set_content(self, content, content_type):
-        if type(content) is unicode:
+        if isinstance(content, unicode):
             content = content.encode('utf8')
         self._content = str(content)
         self._content_type = content_type
@@ -104,7 +104,7 @@ class Page(object):
     def content(self):
         return self._content
 
-    def _record_request(self, request):
+    def record_request(self, request):
         self._requests.append(request)
 
     def request(self, index):
