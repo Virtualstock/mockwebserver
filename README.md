@@ -1,3 +1,14 @@
+# Mock Web Server
+
+[![CircleCI](https://circleci.com/gh/Virtualstock/mockwebserver.svg?style=svg&circle-token=a157be22d8ba5cd2fefe5517bc8de839b7cd232e)](https://circleci.com/gh/Virtualstock/mockwebserver)
+
+## How to develop
+
+```
+pip install -r requirements.txt
+```
+
+## How to use
 
 ```
 from mockwebserver import MockWebServer()
