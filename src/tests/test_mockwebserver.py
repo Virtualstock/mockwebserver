@@ -27,3 +27,11 @@ class TestServer(TestCase):
             response = self.post('page', 'content')
             self.failUnless(response.ok)
             self.assertEqual('content', page.request(1).body)
+
+    def test_post_page_unicode_content(self):
+        page = self.server.set('/page', '')
+        page.set_content(u'', u'application/json')
+        with self.server:
+            response = self.post('page', u'content')
+            self.failUnless(response.ok)
+            self.assertEqual('content', page.request(1).body)
