@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from mockwebserver import MockWebServer
 from unittest import TestCase
 
