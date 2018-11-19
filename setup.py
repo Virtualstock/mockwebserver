@@ -1,11 +1,19 @@
 #!/usr/bin/env python
 
+import os
+
 from setuptools import find_packages, setup
+
+long_description = 'Please see our GitHub README'
+if os.path.exists('README.md'):
+    long_description = open('README.md').read()
 
 setup(
     name='mockwebserver',
     version='0.3.0',
     description='A simple web server for unit testing purposes. Acts as context manager for teardown.',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     author='Virtualstock',
     author_email='dev.admin@virtualstock.com',
     url='https://github.com/Virtualstock/mockwebserver',

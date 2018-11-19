@@ -2,6 +2,8 @@
 
 [![CircleCI](https://circleci.com/gh/Virtualstock/mockwebserver.svg?style=svg&circle-token=a157be22d8ba5cd2fefe5517bc8de839b7cd232e)](https://circleci.com/gh/Virtualstock/mockwebserver)
 
+A simple web server for unit testing purposes. Acts as context manager for teardown.
+
 ## How to develop
 
 ```
