@@ -1,4 +1,4 @@
-from .mockwebserver import MockWebServer
+from mockwebserver import MockWebServer
 from unittest import TestCase
 
 

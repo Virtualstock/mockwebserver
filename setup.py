@@ -18,4 +18,5 @@ setup(
         'requests',
     ],
     tests_require=['requests'],
+    test_suite='tests',
 )
