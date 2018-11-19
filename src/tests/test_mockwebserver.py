@@ -18,26 +18,42 @@ class TestServer(TestCase):
         return requests.post(self.server.url + url, body)
 
     def test_get_page(self):
-        self.server.set('/page', 'content')
+        self.server.set(url='/page', content='content')
         with self.server:
             response = self.get('page')
             self.failUnless(response.ok)
             self.assertEqual('content', response.content)
 
     def test_post_page(self):
-        page = self.server.set('/page', '')
+        page = self.server.set(url='/page', content='')
         with self.server:
             response = self.post('page', 'content')
             self.failUnless(response.ok)
             self.assertEqual('content', page.request(1).body)
 
     def test_post_page_unicode_content(self):
-        page = self.server.set('/page', '')
-        page.set_content(u'', u'application/json')
+        page = self.server.set(url='/page', content='expected content', content_type=u'application/json')
         with self.server:
             response = self.post('page', u'@©')
             self.failUnless(response.ok)
             self.assertEqual('@©', page.request(1).body)
+            self.assertEqual('expected content', page.content)
+            self.assertEqual('expected content', response.content)
+
+            # Ensure the response content is the same as we set for the page.
+            self.assertEqual(page.content, response.content)
+
+    def test_post_page_unicode_content_on_page(self):
+        page = self.server.set(url='/page', content=u'@©', content_type=u'application/json')
+        with self.server:
+            response = self.post('page', u'@©')
+            self.failUnless(response.ok)
+            self.assertEqual('@©', page.request(1).body)
+            self.assertEqual('@©', page.content)
+            self.assertEqual('@©', response.content)
+
+            # Ensure the response content is the same as we set for the page.
+            self.assertEqual(page.content, response.content)
 
 
 class TestPage(TestCase):
