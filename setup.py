@@ -25,6 +25,5 @@ setup(
         'wsgi-intercept==1.5.1',
         'requests',
     ],
-    tests_require=['requests'],
     test_suite='tests',
 )
