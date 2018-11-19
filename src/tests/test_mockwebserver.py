@@ -34,6 +34,6 @@ class TestServer(TestCase):
         page = self.server.set('/page', '')
         page.set_content(u'', u'application/json')
         with self.server:
-            response = self.post('page', u'content')
+            response = self.post('page', u'@©')
             self.failUnless(response.ok)
-            self.assertEqual('content', page.request(1).body)
+            self.assertEqual('@©', page.request(1).body)
