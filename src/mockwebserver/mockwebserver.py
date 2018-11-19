@@ -81,7 +81,7 @@ class Page(object):
         self._requests = []
 
     def set_content(self, content, content_type):
-        self._content = content
+        self._content = str(content)
         self._content_type = content_type
 
     @property
