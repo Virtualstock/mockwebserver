@@ -1,14 +1,22 @@
 #!/usr/bin/env python
 
+import os
+
 from setuptools import find_packages, setup
+
+long_description = 'Please see our GitHub README'
+if os.path.exists('README.md'):
+    long_description = open('README.md').read()
 
 setup(
     name='mockwebserver',
     version='0.3.0',
     description='A simple web server for unit testing purposes. Acts as context manager for teardown.',
-    author='Ronan Klyne',
-    author_email='ronan.klyne@virtualstock.co.uk',
-    url='http://pypi.v-source.co.uk/',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
+    author='Virtualstock',
+    author_email='dev.admin@virtualstock.com',
+    url='https://github.com/Virtualstock/mockwebserver',
     packages=find_packages(where='src'),
     package_dir={'': 'src'},
     include_package_data=True,
