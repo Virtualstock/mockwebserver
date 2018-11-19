@@ -2,6 +2,8 @@
 
 [![CircleCI](https://circleci.com/gh/Virtualstock/mockwebserver.svg?style=svg&circle-token=a157be22d8ba5cd2fefe5517bc8de839b7cd232e)](https://circleci.com/gh/Virtualstock/mockwebserver)
 
+A simple web server for unit testing purposes. Acts as context manager for teardown.
+
 ## How to develop
 
 ```
@@ -20,4 +22,14 @@ def test_requests_get():
         response = requests.get(url)
         assert response.ok
         assert response.text = "page content"
+```
+
+
+## How to distribute
+
+If you need to publish a new version of this package you can use this command:
+
+```bash
+$ make build
+$ make dist
 ```
