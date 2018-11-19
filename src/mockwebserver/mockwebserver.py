@@ -83,6 +83,8 @@ class Page(object):
         self._requests = []
 
     def set_content(self, content, content_type):
+        if type(content) is unicode:
+            content = content.encode('utf8')
         self._content = str(content)
         self._content_type = content_type
 
