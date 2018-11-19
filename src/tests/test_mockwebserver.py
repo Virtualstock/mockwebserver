@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from mockwebserver import MockWebServer
+from mockwebserver.mockwebserver import Page
 from unittest import TestCase
 
 
@@ -37,3 +38,25 @@ class TestServer(TestCase):
             response = self.post('page', u'@©')
             self.failUnless(response.ok)
             self.assertEqual('@©', page.request(1).body)
+
+
+class TestPage(TestCase):
+    def test_url_set_on_constructor(self):
+        url = '/endpoint-url'
+        page = Page('/endpoint-url')
+
+        self.assertEqual(url, page.url)
+
+    def test_set_content_unicode_string_returns_string(self):
+        page = Page('/endpoint-url')
+        page.set_content(u'@©', u'application/json')
+
+        self.assertEqual(u'application/json', page.content_type)
+        self.assertEqual('@©', page.content)
+
+    def test_set_content_string_returns_string(self):
+        page = Page('/endpoint-url')
+        page.set_content('@©', 'application/json')
+
+        self.assertEqual('application/json', page.content_type)
+        self.assertEqual('@©', page.content)
