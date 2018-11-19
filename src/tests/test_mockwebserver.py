@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
+from unittest import TestCase
+
 from mockwebserver import MockWebServer
 from mockwebserver.mockwebserver import Page
-from unittest import TestCase
 
 
 class TestServer(TestCase):
