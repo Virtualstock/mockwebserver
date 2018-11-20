@@ -2,7 +2,7 @@ help:
 	@echo "Usage:"
 	@echo "		make help: 	    print this message"
 	@echo "		make test:	    run the tests"
-	@echo "		make dist:	    build the distribution files"
+	@echo "		make build:	    build the distribution files"
 	@echo "		make upload:	upload distributions in dist directory"
 
 test:
