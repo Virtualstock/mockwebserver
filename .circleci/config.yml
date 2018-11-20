@@ -1,10 +1,53 @@
 version: 2
 
 jobs:
-  build:
+  test:
     working_directory: ~/src
     docker:
       - image: themattrix/tox
     steps:
       - checkout
       - run: make test
+      - persist_to_workspace:
+          root: .
+          paths:
+            - 'coverage.xml'
+
+  code_quality_analysis:
+    docker:
+    - image: circleci/buildpack-deps:stretch
+    resource_class: medium+
+    steps:
+    - checkout
+    - attach_workspace:
+        at: .
+    - run:
+        name: Install JQ
+        command: sudo apt install jq
+    - run:
+        name: Install Sonar Scanner
+        command: |
+          mkdir /tmp/sonar
+          sudo apt install -y wget zip
+          cd /tmp/sonar
+          wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.2.0.1227-linux.zip
+          unzip sonar-scanner-cli-3.2.0.1227-linux.zip
+    - run:
+        name: Analyse code
+        command: |
+          PR_NUMBER=${CIRCLE_PULL_REQUEST##*/}
+          if [[ -n "$PR_NUMBER" ]]
+          then
+            /tmp/sonar/sonar-scanner-3.2.0.1227-linux/bin/sonar-scanner -Dsonar.login=${SONAR_LOGIN} -Dsonar.pullrequest.branch=${CIRCLE_BRANCH} -Dsonar.pullrequest.key=${PR_NUMBER}
+          else
+            /tmp/sonar/sonar-scanner-3.2.0.1227-linux/bin/sonar-scanner -Dsonar.login=${SONAR_LOGIN} -Dsonar.branch.name=${CIRCLE_BRANCH}
+          fi
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - test
+      - code_quality_analysis:
+          requires:
+            - test
