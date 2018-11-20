@@ -10,7 +10,7 @@ if os.path.exists('README.md'):
 
 setup(
     name='mockwebserver',
-    version='0.4.0',
+    version='0.5.0',
     description='A simple web server for unit testing purposes. Acts as context manager for teardown.',
     long_description=long_description,
     long_description_content_type='text/markdown',
