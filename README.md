@@ -33,3 +33,8 @@ If you need to publish a new version of this package you can use this command:
 $ make build
 $ make dist
 ```
+
+
+# License
+
+Licensed under `MIT license`. View [license](LICENSE).
