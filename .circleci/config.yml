@@ -35,7 +35,13 @@ jobs:
     - run:
         name: Analyse code
         command: |
-          /tmp/sonar/sonar-scanner-3.2.0.1227-linux/bin/sonar-scanner -Dsonar.login=${SONAR_LOGIN}
+          PR_NUMBER=${CIRCLE_PULL_REQUEST##*/}
+          if [[ -n "$PR_NUMBER" ]]
+          then
+            /tmp/sonar/sonar-scanner-3.2.0.1227-linux/bin/sonar-scanner -Dsonar.login=${SONAR_LOGIN} -Dsonar.pullrequest.branch=${CIRCLE_BRANCH} -Dsonar.pullrequest.key=${PR_NUMBER}
+          else
+            /tmp/sonar/sonar-scanner-3.2.0.1227-linux/bin/sonar-scanner -Dsonar.login=${SONAR_LOGIN} -Dsonar.branch.name=${CIRCLE_BRANCH}
+          fi
 
 workflows:
   version: 2
