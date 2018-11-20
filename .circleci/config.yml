@@ -38,7 +38,9 @@ jobs:
           PR_NUMBER=${CIRCLE_PULL_REQUEST##*/}
           if [[ -n "$PR_NUMBER" ]]
           then
-            /tmp/sonar/sonar-scanner-3.2.0.1227-linux/bin/sonar-scanner -Dsonar.login=${SONAR_LOGIN} -Dsonar.pullrequest.branch=${CIRCLE_BRANCH} -Dsonar.pullrequest.key=${PR_NUMBER}
+            url="https://api.github.com/repos/Virtualstock/mockwebserver/pulls/$PR_NUMBER"
+            TARGET_BRANCH=$(curl "$url" | jq '.base.ref' | tr -d '"')
+            /tmp/sonar/sonar-scanner-3.2.0.1227-linux/bin/sonar-scanner -Dsonar.login=${SONAR_LOGIN} -Dsonar.pullrequest.branch=${CIRCLE_BRANCH} -Dsonar.pullrequest.key=${PR_NUMBER} -Dsonar.pullrequest.base=$TARGET_BRANCH
           else
             echo "Could not find Pull Request number..."
             /tmp/sonar/sonar-scanner-3.2.0.1227-linux/bin/sonar-scanner -Dsonar.login=${SONAR_LOGIN} -Dsonar.branch.name=${CIRCLE_BRANCH}
