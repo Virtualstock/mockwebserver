@@ -3,6 +3,7 @@
 [![CircleCI](https://circleci.com/gh/Virtualstock/mockwebserver.svg?style=svg&circle-token=a157be22d8ba5cd2fefe5517bc8de839b7cd232e)](https://circleci.com/gh/Virtualstock/mockwebserver)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Virtualstock_mockwebserver&metric=alert_status)](https://sonarcloud.io/dashboard?id=Virtualstock_mockwebserver)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Virtualstock_mockwebserver&metric=coverage)](https://sonarcloud.io/dashboard?id=Virtualstock_mockwebserver)
+[![pullreminders](https://pullreminders.com/badge.svg)](https://pullreminders.com?ref=badge)
 
 A simple web server for unit testing purposes. Acts as context manager for teardown.
 
