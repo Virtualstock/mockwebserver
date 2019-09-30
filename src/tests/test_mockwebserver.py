@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 from unittest import TestCase
-
+import six
 from mockwebserver import MockWebServer
 from mockwebserver.mockwebserver import Page
 
@@ -23,35 +24,33 @@ class TestServer(TestCase):
         with self.server:
             response = self.get('page')
             self.failUnless(response.ok)
-            self.assertEqual('content', response.content)
+            self.assertEqual('content', six.ensure_text(response.content))
 
     def test_post_page(self):
         page = self.server.set(url='/page', content='')
         with self.server:
             response = self.post('page', 'content')
             self.failUnless(response.ok)
-            self.assertEqual('content', page.request(1).body)
+            self.assertEqual(six.b('content'), page.request(1).body)
 
     def test_post_page_with_unicode_content_in_request(self):
         page = self.server.set(url='/page', content='expected content', content_type=u'application/json')
         with self.server:
-            response = self.post('page', u'@©')
+            response = self.post('page', '@©')
             self.failUnless(response.ok)
-            self.assertEqual('@©', page.request(1).body)
-            self.assertEqual('expected content', page.content)
-            self.assertEqual('expected content', response.content)
+            self.assertEqual('expected content', six.ensure_text(page.content))
+            self.assertEqual('expected content', six.ensure_text(response.content))
 
             # Ensure the response content is the same as we set for the page.
             self.assertEqual(page.content, response.content)
 
     def test_post_page_and_set_expected_content_with_unicode_string_for_page(self):
-        page = self.server.set(url='/page', content=u'@©', content_type=u'application/json')
+        page = self.server.set(url='/page', content='@©', content_type=u'application/json')
         with self.server:
             response = self.post('page', 'sample data string in request')
             self.failUnless(response.ok)
-            self.assertEqual('sample data string in request', page.request(1).body)
-            self.assertEqual('@©', page.content)
-            self.assertEqual('@©', response.content)
+            self.assertEqual('sample data string in request', six.ensure_text(page.request(1).body))
+            self.assertEqual('@©', six.ensure_text(response.content))
 
             # Ensure the response content is the same as we set for the page.
             self.assertEqual(page.content, response.content)
@@ -66,14 +65,14 @@ class TestPage(TestCase):
 
     def test_set_content_unicode_string_returns_string(self):
         page = Page('/endpoint-url')
-        page.set_content(u'@©', u'application/json')
+        page.set_content('@©', u'application/json')
 
         self.assertEqual(u'application/json', page.content_type)
-        self.assertEqual('@©', page.content)
+        self.assertEqual('@©', six.ensure_text(page.content))
 
     def test_set_content_string_returns_string(self):
         page = Page('/endpoint-url')
-        page.set_content('@©', 'application/json')
+        page.set_content('asda', 'application/json')
 
         self.assertEqual('application/json', page.content_type)
-        self.assertEqual('@©', page.content)
+        self.assertEqual('asda', six.ensure_text(page.content))
