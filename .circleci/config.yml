@@ -1,4 +1,4 @@
-version: 2
+version: 2.1
 
 jobs:
   test:
@@ -47,10 +47,12 @@ jobs:
           fi
 
 workflows:
-  version: 2
+  version: 2.1
   build:
     jobs:
-      - test
+      - test:
+          pre-steps:
+            - run: apt-get update && apt-get install -y openssh-client git
       - code_quality_analysis:
           requires:
             - test
