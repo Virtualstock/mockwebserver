@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 import random
 
 import attr
+import six
+from six.moves.urllib.parse import urljoin
 from wsgi_intercept.interceptor import RequestsInterceptor
 
 
@@ -61,9 +64,8 @@ class MockWebServer(object):
         self._interceptor.__exit__(*exc)
 
     def page(self, url):
-        import urllib
         if url not in self._pages:
-            full_url = urllib.basejoin(self.url, url)
+            full_url = urljoin(self.url, url)
             self._pages[url] = Page(full_url)
         return self._pages[url]
 
@@ -83,9 +85,7 @@ class Page(object):
         self._requests = []
 
     def set_content(self, content, content_type):
-        if isinstance(content, unicode):
-            content = content.encode('utf8')
-        self._content = str(content)
+        self._content = six.ensure_binary(content)
         self._content_type = content_type
 
     @property
